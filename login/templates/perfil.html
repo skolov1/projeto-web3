@@ -1,0 +1,52 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Meu Perfil | DJ, o Ango{% endblock %}
+
+{% block conteudo %}
+    <div class="profile-page">
+        <section class="page-hero">
+            <div class="page-hero-content">
+                <h1>Meu Perfil</h1>
+                <p>Consulte e atualize suas informações cadastrais</p>
+            </div>
+        </section>
+
+        <section class="profile-content">
+            <div class="container">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <div class="profile-avatar" aria-hidden="true">{{ user.first_name|default:user.username|first|upper }}</div>
+                        <div class="profile-identity">
+                            <span>Conta do usuário</span>
+                            <h2>{{ user.get_full_name|default:user.username }}</h2>
+                            <p>{{ user.email }}</p>
+                        </div>
+                    </div>
+
+                    <form method="post" class="profile-form">
+                        {% csrf_token %}
+                        <div class="profile-form-grid">
+                            <div class="profile-field">
+                                <label for="profile-first-name">Nome</label>
+                                <input id="profile-first-name" type="text" name="nome" value="{{ user.first_name }}" autocomplete="given-name">
+                            </div>
+                            <div class="profile-field">
+                                <label for="profile-last-name">Sobrenome</label>
+                                <input id="profile-last-name" type="text" name="sobrenome" value="{{ user.last_name }}" autocomplete="family-name">
+                            </div>
+                            <div class="profile-field profile-field--full">
+                                <label for="profile-email">E-mail</label>
+                                <input id="profile-email" type="email" name="email" value="{{ user.email }}" autocomplete="email">
+                            </div>
+                        </div>
+
+                        <div class="profile-form-actions">
+                            <button type="submit" class="profile-save-button">Salvar alterações</button>
+                            <a class="profile-password-link" href="{% url 'alterar_senha' %}">Alterar senha</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

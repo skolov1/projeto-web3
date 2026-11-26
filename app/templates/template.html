@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=10">
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'index' %}">DJ, o Ango</a></h1>
+        <nav>
+            {% if user.is_authenticated %}
+                <a href="{% url 'quem_somos' %}">Quem Somos</a>
+                <a href="{% url 'produtos' %}">Produtos</a>
+                <a href="{% url 'servicos' %}">Serviços</a>
+                {% if user.is_staff or user.is_superuser %}
+                    <a href="{% url 'contatos' %}">Contatos (Admin)</a>
+                {% else %}
+                    <a href="{% url 'add_contato' %}">Contato</a>
+                {% endif %}
+                <a href="{% url 'carrinho' %}">Carrinho</a>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <input type="submit" value="Sair" class="logout-button">
+                </form>
+            {% else %}
+                <a href="{% url 'quem_somos' %}">Quem Somos</a>
+                <a href="{% url 'produtos' %}">Produtos</a>
+                <a href="{% url 'servicos' %}">Serviços</a>
+                <a href="{% url 'add_contato' %}">Contato</a>
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block conteudo %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>

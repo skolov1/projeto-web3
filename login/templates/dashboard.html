@@ -1,0 +1,244 @@
+{% extends 'template.html' %}
+
+{% block titulo %} Dashboard | DJ, o Ango {% endblock %}
+
+{% block conteudo %}
+    <!-- Header do Dashboard -->
+    <header class="dashboard-header">
+        <div class="dashboard-header-content">
+            <div class="welcome">
+                <h1>Dashboard</h1>
+                <p>Olá, <strong>{{ user.get_full_name|default:user.username }}</strong>!</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <!-- Cards de Resumo -->
+        <section class="stats-grid">
+            <article class="stat-card">
+                <div class="stat-icon stat-pedidos">📦</div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ total_pedidos }}</span>
+                    <span class="stat-label">Total de Pedidos</span>
+                </div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon stat-ativos">🟢</div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ pedidos_ativos }}</span>
+                    <span class="stat-label">Em Andamento</span>
+                </div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon stat-finalizados">✅</div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ pedidos_finalizados }}</span>
+                    <span class="stat-label">Finalizados</span>
+                </div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon stat-gasto">💰</div>
+                <div class="stat-info">
+                    <span class="stat-value">R$ {{ total_gasto|floatformat:2 }}</span>
+                    <span class="stat-label">Total Gasto</span>
+                </div>
+            </article>
+        </section>
+
+        {% if is_admin %}
+        <!-- Gráficos -->
+        <section class="charts-grid">
+            <!-- Gráfico de Pedidos por Mês -->
+            <article class="chart-card">
+                <header class="chart-header">
+                    <h3>Pedidos nos Últimos 6 Meses</h3>
+                </header>
+                <div class="chart-wrapper">
+                    <canvas id="graficoPedidosMes"></canvas>
+                </div>
+                {% if meses_valores|length == 0 or meses_valores == "[]" %}
+                    <p class="chart-empty">Nenhum pedido nos últimos 6 meses</p>
+                {% endif %}
+            </article>
+
+            <!-- Gráfico de Serviços por Categoria (Admin) -->
+            <article class="chart-card">
+                <header class="chart-header">
+                    <h3>Serviços por Categoria</h3>
+                </header>
+                <div class="chart-wrapper">
+                    <canvas id="graficoCategorias"></canvas>
+                </div>
+                {% if categorias_valores|length == 0 or categorias_valores == "[]" %}
+                    <p class="chart-empty">Nenhum serviço cadastrado</p>
+                {% endif %}
+            </article>
+
+            <!-- Gráfico Status Serviços (Admin) -->
+            <article class="chart-card">
+                <header class="chart-header">
+                    <h3>Status dos Produtos/h3>
+                </header>
+                <div class="chart-wrapper">
+                    <canvas id="graficoStatusServicos"></canvas>
+                </div>
+            </article>
+        </section>
+        {% endif %}
+
+        <!-- Ações Rápidas -->
+        <section class="quick-actions">
+            <h2>Ações Rápidas</h2>
+            <div class="actions-grid">
+                <a href="{% url 'produtos' %}" class="action-card">
+                    <span class="action-icon">🛍️</span>
+                    <h4>Ver Produtos</h4>
+                    <p>Encontre e compre produtos</p>
+                </a>
+                <a href="{% url 'meus_pedidos' %}" class="action-card">
+                    <span class="action-icon">📋</span>
+                    <h4>Meus Pedidos</h4>
+                    <p>Acompanhe seus pedidos</p>
+                </a>
+                <a href="{% url 'perfil' %}" class="action-card">
+                    <span class="action-icon">👤</span>
+                    <h4>Editar Perfil</h4>
+                    <p>Atualize seus dados</p>
+                </a>
+                {% if is_admin %}
+                <a href="{% url 'servicos' %}" class="action-card">
+                    <span class="action-icon">⚙️</span>
+                    <h4>Gerenciar Serviços</h4>
+                    <p>CRUD de serviços</p>
+                </a>
+                <a href="{% url 'integrantes' %}" class="action-card">
+                    <span class="action-icon">👥</span>
+                    <h4>Gerenciar Equipe</h4>
+                    <p>CRUD de integrantes</p>
+                </a>
+                <a href="{% url 'relatorios' %}" class="action-card">
+                    <span class="action-icon">📊</span>
+                    <h4>Relatórios Completos</h3>
+                    <p>Gráficos detalhados</p>
+                </a>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    {% if is_admin %}
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Dados do template
+        const mesesLabels = JSON.parse('{{ meses_labels|safe }}');
+        const mesesValores = JSON.parse('{{ meses_valores|safe }}');
+        const categoriasLabels = JSON.parse('{{ categorias_labels|safe }}');
+        const categoriasValores = JSON.parse('{{ categorias_valores|safe }}');
+        const servicosAtivos = {{ servicos_ativos }};
+        const servicosInativos = {{ servicos_inativos }};
+        const isAdmin = {{ is_admin|yesno:"true,false" }};
+
+        // Cores do tema
+        const colors = {
+            primary: '#ff2a6e',
+            secondary: '#0C4B33',
+            accent: '#D1A45B',
+            bg: '#1a1a1a',
+            text: '#292929',
+            grid: '#e0e0e0'
+        };
+
+        // Gráfico 1: Pedidos por Mês (Barra)
+        if (mesesLabels.length > 0) {
+            new Chart(document.getElementById('graficoPedidosMes'), {
+                type: 'bar',
+                data: {
+                    labels: mesesLabels,
+                    datasets: [{
+                        label: 'Pedidos',
+                        data: mesesValores,
+                        backgroundColor: colors.primary,
+                        borderColor: colors.primary,
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: getBarOptions('Pedidos por Mês')
+            });
+        }
+
+        // Gráfico 2: Serviços por Categoria (Admin - Barra horizontal)
+        if (isAdmin && categoriasLabels.length > 0) {
+            new Chart(document.getElementById('graficoCategorias'), {
+                type: 'bar',
+                data: {
+                    labels: categoriasLabels,
+                    datasets: [{
+                        label: 'Quantidade',
+                        data: categoriasValores,
+                        backgroundColor: colors.secondary,
+                        borderColor: colors.secondary,
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    ...getBarOptions('Serviços por Categoria'),
+                    indexAxis: 'y',
+                }
+            });
+        }
+
+        // Gráfico 3: Status dos Serviços (Admin - Doughnut)
+        if (isAdmin) {
+            new Chart(document.getElementById('graficoStatusServicos'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ativos', 'Inativos'],
+                    datasets: [{
+                        data: [servicosAtivos, servicosInativos],
+                        backgroundColor: [colors.secondary, colors.accent],
+                        borderColor: ['#1a1a1a', '#1a1a1a'],
+                        borderWidth: 3,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 20, font: { size: 13 } } },
+                        title: { display: false }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        function getBarOptions(title) {
+            return {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, color: colors.text },
+                        grid: { color: colors.grid }
+                    },
+                    x: {
+                        ticks: { color: colors.text },
+                        grid: { display: false }
+                    }
+                }
+            };
+        }
+    </script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'template.html' %}
+
+{% block titulo %} Home | DJ, o Ango {% endblock %}
+
+{% block conteudo %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">DJ, o Ango</h1>
+            <p class="hero-subtitle">Conectando clientes a profissionais e serviços de qualidade</p>
+            <a href="{% url 'produtos' %}" class="hero-cta">Conhecer Serviços</a>
+        </div>
+    </section>
+
+    <!-- Sobre o Projeto -->
+    <section class="about-project">
+        <div class="container">
+            <h2 class="section-title">Sobre o Projeto</h2>
+            <p class="about-text">
+                DJ, o Ango é uma plataforma desenvolvida como projeto final da disciplina de Desenvolvimento Web,
+                utilizando o framework <strong>Django</strong> em Python. Nossa missão é facilitar o acesso a bons
+                serviços, oferecendo uma experiência confiante e prática tanto para quem compra quanto para quem oferece soluções.
+            </p>
+        </div>
+    </section>
+
+    <!-- Cards de Destaque -->
+    <section class="highlights">
+        <div class="container">
+            <div class="cards-grid">
+                <article class="highlight-card">
+                    <div class="card-icon">⚡</div>
+                    <h3>Qualidade Garantida</h3>
+                    <p>Todos os serviços passam por curadoria para garantir padrões elevados de excelência e satisfação do cliente.</p>
+                </article>
+                <article class="highlight-card">
+                    <div class="card-icon">🔗</div>
+                    <h3>Conexão Direta</h3>
+                    <p>Eliminação de intermediários: clientes e profissionais se conectam diretamente, com transparência nos valores e termos.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Diferencial -->
+    <section class="differential">
+        <div class="container">
+            <div class="differential-content">
+                <h2>Nosso Diferencial</h2>
+                <p>
+                    Diferente de marketplaces tradicionais, <strong>DJ, o Ango</strong> foca na <span class="highlight-text">confiança e proximidade</span>.
+                    Cada profissional tem seu perfil verificado, avaliações reais e portfólio visível.
+                    O cliente escolhe com segurança; o profissional cresce com reputação.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="cta-final">
+        <div class="container">
+            <h2>Pronto para começar?</h2>
+            <p>Encontre o serviço ideal ou ofereça suas habilidades para novos clientes.</p>
+            <div class="cta-buttons">
+                <a href="{% url 'produtos' %}" class="btn btn-primary">Ver Serviços</a>
+                <a href="{% url 'cadastro' %}" class="btn btn-secondary">Cadastrar como Profissional</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

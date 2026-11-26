@@ -1,0 +1,58 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Carrinho | DJ, o Ango{% endblock %}
+
+{% block conteudo %}
+    <h2>Seu Carrinho</h2>
+
+    {% if itens %}
+        <div class="cart-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Serviço</th>
+                        <th>Preço (R$)</th>
+                        <th>Quantidade</th>
+                        <th>Subtotal (R$)</th>
+                        <th colspan="2">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in itens %}
+                        <tr>
+                            <td>{{ item.servico.nome }}</td>
+                            <td>{{ item.preco }}</td>
+                            <td>{{ item.quantidade }}</td>
+                            <td><strong>{{ item.subtotal }}</strong></td>
+                            <td>
+                                <a href="{% url 'edit_item_carrinho' item.id %}" class="action-link">Editar</a>
+                            </td>
+                            <td>
+                                <a href="{% url 'remover_do_carrinho' item.id %}" class="delete-button"
+                                   onclick="return confirm('Deseja realmente remover este item?')">Remover</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="cart-total">
+                <h3>Total: R$ {{ total }}</h3>
+            </div>
+
+            <div class="cart-actions">
+                <a href="{% url 'meus_pedidos' %}" class="action-link">Ver Meus Pedidos</a>
+                <form method="post" action="{% url 'finalizar_pedido' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="action-link">Finalizar Pedido</button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <p><strong>Seu carrinho está vazio!</strong></p>
+            <p>Adicione serviços ao carrinho explorando nossos produtos.</p>
+            <a href="{% url 'produtos' %}" class="add-link">Ver Produtos</a>
+        </div>
+    {% endif %}
+{% endblock %}

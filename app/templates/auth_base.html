@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}{% endblock %} | DJ, o Ango</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'index' %}">DJ, o Ango</a></h1>
+        <nav>
+            <a href="{% url 'quem_somos' %}">Quem Somos</a>
+            <a href="{% url 'produtos' %}">Produtos</a>
+            <a href="{% url 'servicos' %}">Serviços</a>
+            <a href="{% url 'add_contato' %}">Contato</a>
+            <a href="{% url 'login' %}">Login</a>
+        </nav>
+    </header>
+    <main>
+        {% block conteudo %}
+        {% endblock %}
+    </main>
+    <footer style="text-align: center; padding: 20px; color: #666; border-top: 1px solid #eee; margin-top: 40px;">
+        <p>&copy; 2025 DJ, o Ango - Projeto Acadêmico</p>
+    </footer>
+</body>
+</html>

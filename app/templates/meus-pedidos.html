@@ -1,0 +1,57 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Meus Pedidos | DJ, o Ango{% endblock %}
+
+{% block conteudo %}
+    <h2>Meus Pedidos</h2>
+
+    {% if pedidos %}
+        {% for pedido in pedidos %}
+            <div class="order-card">
+                <div class="order-header">
+                    <h3>Pedido #{{ pedido.id }}</h3>
+                    <span class="order-date">{{ pedido.data_pedido|date:"d/m/Y H:i" }}</span>
+                </div>
+
+                {% if pedido.itens.exists %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Serviço</th>
+                                <th>Quantidade</th>
+                                <th>Preço Unitário</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in pedido.itens.all %}
+                                <tr>
+                                    <td>{{ item.servico.nome }}</td>
+                                    <td>{{ item.quantidade }}</td>
+                                    <td>R$ {{ item.preco }}</td>
+                                    <td>R$ {{ item.subtotal }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="order-total">
+                        <strong>Total: R$ {{ pedido.total }}</strong>
+                    </div>
+                {% else %}
+                    <p>Este pedido não contém itens.</p>
+                {% endif %}
+            </div>
+
+            <hr>
+        {% endfor %}
+    {% else %}
+        <div class="empty-orders">
+            <p>Você ainda não realizou nenhum pedido.</p>
+            <a href="{% url 'produtos' %}" class="add-link">Ver Produtos</a>
+        </div>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'carrinho' %}" class="action-link">← Voltar ao Carrinho</a>
+{% endblock %}

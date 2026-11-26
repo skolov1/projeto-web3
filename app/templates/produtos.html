@@ -1,0 +1,78 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Produtos | DJ, o Ango{% endblock %}
+
+{% block conteudo %}
+    <div class="products-page">
+        <section class="page-hero">
+            <div class="page-hero-content">
+                <h1>Nossos Produtos</h1>
+                <p>Encontre serviços e produtos para atender às suas necessidades</p>
+            </div>
+        </section>
+
+        <section class="products-section">
+            <div class="container">
+                <header class="section-header">
+                    <h2>Serviços Locais</h2>
+                    <p>Serviços disponíveis para compra e adição ao seu carrinho</p>
+                </header>
+
+                {% if servicos %}
+                    <div class="products-grid">
+                        {% for servico in servicos %}
+                            <article class="service-card product-card">
+                                {% if servico.imagem %}
+                                    <img src="{{ servico.imagem.url }}" alt="{{ servico.nome }}" loading="lazy">
+                                {% endif %}
+                                <div class="product-card-content">
+                                    <h3>{{ servico.nome }}</h3>
+                                    <p>{{ servico.descricao }}</p>
+                                    <strong class="product-price">R$ {{ servico.preco }}</strong>
+
+                                    {% if user.is_authenticated %}
+                                        <form method="post" action="{% url 'adicionar_ao_carrinho' servico.id %}" class="product-buy-form">
+                                            {% csrf_token %}
+                                            <button type="submit" class="product-buy-button">Comprar</button>
+                                        </form>
+                                    {% else %}
+                                        <a href="{% url 'login' %}?next={% url 'produtos' %}" class="product-buy-button">Comprar</a>
+                                    {% endif %}
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="products-empty">Nenhum serviço local cadastrado.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="products-section products-section--external">
+            <div class="container">
+                <header class="section-header">
+                    <h2>Produtos de Parceiros</h2>
+                    <p>Confira produtos disponíveis por meio da nossa API de parceiros</p>
+                </header>
+
+                <div class="products-grid">
+                    {% for prod in produtos_api %}
+                        <article class="service-card product-card">
+                            {% if prod.image %}
+                                <img src="{{ prod.image }}" alt="{{ prod.title }}" loading="lazy">
+                            {% endif %}
+                            <div class="product-card-content">
+                                <span class="external-tag">Parceiro</span>
+                                <h3>{{ prod.title }}</h3>
+                                <p>{{ prod.description|truncatewords:15 }}</p>
+                                <strong class="product-price">R$ {{ prod.price }}</strong>
+                            </div>
+                        </article>
+                    {% empty %}
+                        <p class="products-empty">Nenhum produto de parceiro disponível.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

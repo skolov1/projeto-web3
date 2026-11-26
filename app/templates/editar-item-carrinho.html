@@ -1,0 +1,33 @@
+{% extends 'template.html' %}
+
+{% block titulo %} Editar Item do Carrinho {% endblock %}
+
+{% block conteudo %}
+    <h2>Editar Item</h2>
+
+    <div class="contact-form">
+        <form method="post">
+            {% csrf_token %}
+            
+            <p>
+                <label>Serviço:</label>
+                <strong>{{ item.servico.nome }}</strong>
+            </p>
+            
+            <p>
+                <label>Preço unitário:</label>
+                <strong>R$ {{ item.preco }}</strong>
+            </p>
+            
+            <p>
+                <label for="quantidade">Quantidade:</label>
+                <input type="number" name="quantidade" id="quantidade" value="{{ item.quantidade }}" min="1" required>
+            </p>
+            
+            <p>
+                <input type="submit" value="Salvar">
+                <a href="{% url 'carrinho' %}" class="action-link">Cancelar</a>
+            </p>
+        </form>
+    </div>
+{% endblock %}

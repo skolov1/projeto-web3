@@ -1,0 +1,33 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Contatos | Django{% endblock %}
+
+{% block conteudo %}
+    <h2>Nossos Contatos</h2>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Telefone</th>
+                    <th>Mensagem</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contato in contatos %}
+                    <tr>
+                        <td>{{ contato.nome }}</td>
+                        <td>{{ contato.email }}</td>
+                        <td>{{ contato.telefone }}</td>
+                        <td>{{ contato.mensagem }}</td>
+                        <td><a class="delete-button" href="{% url 'del_contato' contato.id %}">Excluir</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5">Nenhum contato enviado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

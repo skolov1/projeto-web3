@@ -1,0 +1,158 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Serviços | DJ, o Ango{% endblock %}
+
+{% block conteudo %}
+    <div class="services-page">
+        <section class="page-hero">
+            <div class="page-hero-content">
+                <h1>Nossos Serviços</h1>
+                <p>Encontre profissionais e soluções para o que você precisa</p>
+            </div>
+        </section>
+
+        <section class="services-content">
+            <div class="container">
+                <div class="services-heading">
+                    <div>
+                        <h2>Explore os serviços</h2>
+                        <p>Use a busca e os filtros para encontrar a opção ideal.</p>
+                    </div>
+                    {% if is_admin %}
+                        <a class="services-add-button" href="{% url 'addServicos' %}">Adicionar serviço</a>
+                    {% endif %}
+                </div>
+
+                {% if tem_servicos %}
+                    <div class="services-summary">
+                        <article class="services-summary-card">
+                            <span class="services-summary-label">Serviços disponíveis</span>
+                            <strong>{{ total_servicos }}</strong>
+                        </article>
+                        {% if mais_barato %}
+                            <article class="services-summary-card">
+                                <span class="services-summary-label">Menor preço</span>
+                                <strong>R$ {{ mais_barato.preco }}</strong>
+                            </article>
+                        {% endif %}
+                        {% if mais_caro %}
+                            <article class="services-summary-card">
+                                <span class="services-summary-label">Maior preço</span>
+                                <strong>R$ {{ mais_caro.preco }}</strong>
+                            </article>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p class="services-empty-message">Nenhum serviço disponível no momento.</p>
+                {% endif %}
+
+                <section class="services-filters" aria-label="Filtros de serviços">
+                    <form method="get" class="services-search">
+                        <label for="service-search">Buscar serviço</label>
+                        <div class="services-search-controls">
+                            <input id="service-search" type="search" name="busca" placeholder="Digite o nome do serviço" value="{{ busca|default:'' }}">
+                            <button type="submit">Buscar</button>
+                        </div>
+                    </form>
+
+                    <div class="services-filter-group">
+                        <h3>Categoria</h3>
+                        <div class="services-filter-options">
+                            {% for categoria_item in categorias %}
+                                <a class="services-filter-link" href="?categoria={{ categoria_item.id }}">{{ categoria_item.nome }}</a>
+                            {% empty %}
+                                <p class="services-filter-note">Nenhuma categoria disponível.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="services-filter-group">
+                        <h3>Faixa de preço</h3>
+                        <div class="services-filter-options">
+                            <a class="services-filter-link" href="?preco=baixo">Até R$ 500</a>
+                            <a class="services-filter-link" href="?preco=medio">R$ 500 a R$ 1.500</a>
+                            <a class="services-filter-link" href="?preco=alto">Acima de R$ 1.500</a>
+                        </div>
+                    </div>
+
+                    <div class="services-filter-group">
+                        <h3>Ordenar por</h3>
+                        <div class="services-filter-options">
+                            <a class="services-filter-link" href="?ordem=menor">Menor preço</a>
+                            <a class="services-filter-link" href="?ordem=maior">Maior preço</a>
+                            <a class="services-filter-link" href="?ordem=nome">Nome</a>
+                        </div>
+                    </div>
+
+                    <a class="services-clear-filters" href="{% url 'servicos' %}">Limpar filtros</a>
+                </section>
+
+                {% if is_admin %}
+                    <div class="table-wrapper services-table-wrapper">
+                        <table class="services-table">
+                            <thead>
+                                <tr>
+                                    <th>Serviço</th>
+                                    <th>Descrição</th>
+                                    <th>Preço</th>
+                                    <th>Imagem</th>
+                                    <th colspan="2">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for servico in servicos %}
+                                    <tr>
+                                        <td class="services-table-name">{{ servico.nome }}</td>
+                                        <td>{{ servico.descricao }}</td>
+                                        <td class="services-table-price">R$ {{ servico.preco }}</td>
+                                        <td>
+                                            {% if servico.imagem %}
+                                                <img class="services-table-image" src="{{ servico.imagem.url }}" alt="{{ servico.nome }}" loading="lazy">
+                                            {% else %}
+                                                <span class="services-no-image">Sem imagem</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><a class="action-link" href="{% url 'editServicos' servico.id %}">Editar</a></td>
+                                        <td><a class="delete-button" href="{% url 'delServicos' servico.id %}">Excluir</a></td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td class="services-table-empty" colspan="6">Nenhum serviço encontrado para esses filtros.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="services-cards">
+                        {% for servico in servicos %}
+                            <article class="services-card">
+                                {% if servico.imagem %}
+                                    <img src="{{ servico.imagem.url }}" alt="{{ servico.nome }}" loading="lazy">
+                                {% else %}
+                                    <div class="services-card-placeholder" aria-hidden="true">Serviço</div>
+                                {% endif %}
+                                <div class="services-card-content">
+                                    {% if servico.categoria %}
+                                        <span class="services-card-category">{{ servico.categoria.nome }}</span>
+                                    {% endif %}
+                                    <h3>{{ servico.nome }}</h3>
+                                    <p>{{ servico.descricao }}</p>
+                                    <strong class="services-card-price">R$ {{ servico.preco }}</strong>
+                                    {% if user.is_authenticated %}
+                                        <form method="post" action="{% url 'adicionar_ao_carrinho' servico.id %}" class="services-card-form">
+                                            {% csrf_token %}
+                                            <button type="submit">Adicionar ao carrinho</button>
+                                        </form>
+                                    {% else %}
+                                        <a class="services-card-buy" href="{% url 'login' %}?next={% url 'produtos' %}">Assinar Serviço</a>
+                                    {% endif %}
+                                </div>
+                            </article>
+                        {% empty %}
+                            <p class="services-empty-message">Nenhum serviço encontrado para esses filtros.</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+{% endblock %}

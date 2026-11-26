@@ -1,0 +1,12 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Novo Contato | Django{% endblock %}
+
+{% block conteudo %}
+    <h2>Novo Contato</h2>
+    <form method="post" class="contact-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Enviar</button>
+    </form>
+{% endblock %}

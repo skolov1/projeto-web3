@@ -1,0 +1,35 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Editar Integrante | DJ, o Ango{% endblock %}
+
+{% block conteudo %}
+    <h2>Editar Integrante</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Nome:</label>
+            <input type="text" name="nome" value="{{ integrante.nome }}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Cargo:</label>
+            <input type="text" name="cargo" value="{{ integrante.cargo }}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Biografia:</label>
+            <textarea name="biografia" rows="4" required>{{ integrante.biografia }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Foto URL (opcional):</label>
+            <input type="url" name="foto" value="{{ integrante.foto_url }}">
+        </div>
+
+        <br>
+        <button type="submit" class="add-link">Salvar Alterações</button>
+        <a href="{% url 'integrantes' %}" class="action-link">Cancelar</a>
+    </form>
+{% endblock %}

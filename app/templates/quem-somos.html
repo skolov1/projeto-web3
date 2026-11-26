@@ -1,0 +1,124 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Quem Somos | DJ, o Ango{% endblock %}
+
+{% block conteudo %}
+    <!-- Hero da página -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <h1>Quem Somos</h1>
+            <p>Conheça a história, os valores e a equipe por trás da DJ, o Ango</p>
+        </div>
+    </section>
+
+    <!-- Sobre a Empresa -->
+    <section class="about-company">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-text-content">
+                    <h2>Sobre a DJ, o Ango</h2>
+                    <p class="lead">
+                        DJ, o Ango é uma plataforma dedicada a conectar clientes com
+                        profissionais e serviços de qualidade. Nossa missão é facilitar
+                        o acesso a bons serviços, oferecendo uma experiência confiante e
+                        prática tanto para quem compra quanto para quem oferece soluções.
+                    </p>
+                    <p>
+                        Nasceu como projeto acadêmico da disciplina de <strong>Desenvolvimento Web III</strong>,
+                        construída com <strong>Django</strong> (Python), <strong>PostgreSQL</strong> e integração
+                        com <strong>Supabase</strong> para dados da equipe. Mais que uma entrega de faculdade,
+                        é uma base real para um marketplace de serviços.
+                    </p>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Valores Fundamentais</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">2</span>
+                        <span class="stat-label">Integrantes da Equipe</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1</span>
+                        <span class="stat-label">Plataforma Completa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Valores -->
+    <section class="values-section">
+        <div class="container">
+            <header class="section-header">
+                <h2>Nossos Valores</h2>
+                <p>Princípios que guiam cada decisão nossa</p>
+            </header>
+            <div class="values-grid">
+                <article class="value-card">
+                    <h3>Qualidade</h3>
+                    <p>Garantimos que todos os serviços oferecidos sigam padrões elevados de excelência. Curadoria rigorosa e feedback contínuo.</p>
+                </article>
+                <article class="value-card">
+                    <h3>Transparência</h3>
+                    <p>Comunicamos os valores e os termos de forma clara e acessível. Sem taxas ocultas, sem surpresas.</p>
+                </article>
+                <article class="value-card">
+                    <h3>Conexão</h3>
+                    <p>Conectamos profissionais habilidosos com clientes que precisam de seus serviços. Direto, simples, humano.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipe -->
+    <section class="team-section-page">
+        <div class="container">
+            <header class="section-header">
+                <h2>Nossa Equipe</h2>
+                <p>Pessoas reais por trás do código</p>
+            </header>
+
+            {% if integrantes %}
+                <div class="team-grid">
+                    {% for integrante in integrantes %}
+                        <article class="team-member-card">
+                            <div class="member-photo">
+                                {% if integrante.foto_url %}
+                                    <img src="{{ integrante.foto_url }}" alt="{{ integrante.nome }}" loading="lazy">
+                                {% else %}
+                                    <div class="photo-placeholder">
+                                        <span>{{ integrante.nome|first }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="member-info">
+                                <h3>{{ integrante.nome }}</h3>
+                                <p class="member-role">{{ integrante.cargo }}</p>
+                                <p class="member-bio">{{ integrante.biografia }}</p>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="team-empty">
+                    <p>Nenhum integrante cadastrado no momento.</p>
+                    {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'addIntegrante' %}" class="btn btn-primary">Adicionar Primeiro Integrante</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer da página - Info do Projeto -->
+    <section class="project-info">
+        <div class="container">
+            <div class="project-card">
+                <h3>Projeto Acadêmico</h3>
+                <p>Este projeto foi desenvolvido como projeto final da disciplina de <strong>Desenvolvimento Web III</strong>, utilizando o framework <strong>Django</strong> em Python.</p>
+            </div>
+        </div>
+    </section>
+{% endblock %}
